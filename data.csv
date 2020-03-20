@@ -1,0 +1,4 @@
+id,title,media,internal_link,description,numerical,external_link,list
+1,A Book,https://images.manning.com/360/480/resize/book/7/65fca1c-6826-472d-bbea-c1d4a7b3c570/Chollet-DLP-HI.png,https://www.manning.com/books/deep-learning-with-python,This book is amazing,5,https://www.manning.com/books/deep-learning-with-python,Got me an A
+2,B Book,https://images.manning.com/360/480/resize/book/d/848f767-1c05-470a-83f4-9ddabb67fdbd/Shukla-MLTF-HI.png,https://www.manning.com/books/machine-learning-with-tensorflow,This book is OK,4,https://www.manning.com/books/machine-learning-with-tensorflow,Got me a B
+3,C Book,,,This book is passable,3,,Got me a C
