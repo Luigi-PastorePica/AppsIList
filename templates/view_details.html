@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<script>
+    let details = {{ details|tojson }}
+    console.log(typeof(details))
+    console.log(details)
+</script>
+<script type="text/javascript" src="./../static/view.js"></script>
+{% endblock %}
+
+{% block content %}
+{{details}}
+<div class="row">
+    <div id="title" class="col-9"></div>
+    <div id="rating" class="col-3"></div>
+</div>
+<div class="row">
+    <div id="media" class="offset-1 col-10 offset-md-0 col-md-3"></div>
+    <div id="description" class="col-12 col-md-9"></div>
+</div>
+<div class="row">
+    <div id="visit-site" class="text-center"></div>
+</div>
+<div id="list" class="row">
+    <div class="text-left">Reviews</div>
+</div>
+{% endblock %}

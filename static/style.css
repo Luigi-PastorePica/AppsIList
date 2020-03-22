@@ -1,3 +1,14 @@
 #mission {
     font-size: 25px;
 }
+#create-successful {
+    font-size: 24px;
+
+}
+.warning {
+    color: crimson;
+    font-weight: bold;
+}
+.bold {
+    font-weight: bold;
+}
