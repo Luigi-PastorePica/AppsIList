@@ -4,6 +4,10 @@ let newest_url = "/newest";
 $(window).on("load", function(){
 
     $(document).ready(function(){
+        $(".active").removeClass("active")
+        $("#home").addClass("active");
+        $("span .sr-only").remove();
+        $("#home a").append("<span class=\"sr-only\">(current)</span>");
         display_newest();
     })
 

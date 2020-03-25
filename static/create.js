@@ -1,5 +1,13 @@
+// let new_link;
 $(document).ready(function(){
+
+    $(".active").removeClass("active")
+    $("#create").addClass("active");
+    $("span .sr-only").remove();
+    $("#create a").append("<span class=\"sr-only\">(current)</span>");
+
     $("#title-input").focus();
+    $("form").bind("submit", preventDefault); // Default submit behavior for Bootstrap forms causes many undesirable effects
 
     $("#submit-button").on("click", function(){
 
@@ -73,28 +81,48 @@ $(document).ready(function(){
 
         //TODO Show link to newly created document
         if(values_missing){
-            $("form").bind("submit", preventDefault);
+            // $("form").bind("submit", preventDefault);
             let warning_input_sibling = $("span.warning").first().prev();
-            if (warning_input_sibling.className() != "form-check") // This is brittle
+            if (warning_input_sibling.className() !== "form-check") // This is brittle
                 warning_input_sibling.focus(); // This is brittle and highly dependent on tag ordering. FIX
         } else {
-            $("form").unbind("submit", preventDefault);
+            // $("form").unbind("submit", preventDefault);
             submit_new();
-            $("#title-input").focus();
+            // console.log("link returned by submit_new(): " + new_link);
+            // clean_input();
+            // $("#title-input").focus();
+            // display_new_link(new_link);
+
         }
     });
-})
+});
 
 //    Binding this function to the form disables the default behavior of the submit button, which clears the form when pressed.
 //    Unbinding this function re-enables the default behavior of the submit button.
 //    Obtained this solution from https://stackoverflow.com/questions/1164132/how-to-reenable-event-preventdefault
 function preventDefault(event) {
     event.preventDefault();
+};
+// Temporary solution until I can figure out how to make Bootstrap forms submit functionality work nicely  JQuery.append
+function clean_input(){
+    $("#title-input").val('');
+    $("#media-link-input").val('');
+    $("#description-input").val('');
+    // Incredibly helpful here https://stackoverflow.com/questions/977137/how-to-reset-radiobuttons-in-jquery-so-that-none-is-checked
+    $('input[name="rating-selection"]').prop('checked', false);
+    $("#review-input").val('');
+    $("#external-link-input").val('');
+};
+
+function display_new_link(link){
+    $("#create-successful").append(
+        "<div><span class=\"bold text-center\">Success</span>. " +
+        "New item successfully created. You can access it <a href=\"" + link + "\">here</a>" +
+        "</div>");
 }
 
-
 function submit_new(){
-    console.log("submit_new was called");
+    // console.log("submit_new was called");  // Debugging
     let new_item = {};
     new_item["title"] = $("#title-input").val();
     new_item["media"] = $("#media-link-input").val();
@@ -104,24 +132,21 @@ function submit_new(){
     new_item["external_link"] = $("#external-link-input").val();
     new_item["list_elem"] = $("#review-input").val();
 
-    console.log(JSON.stringify(new_item));
+    // console.log(JSON.stringify(new_item));
     $.ajax({
         type: "POST",
         url: "add_item",
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(new_item),
-        success: function(result){
-        //    Should get the link to the new detail page and display it
-
-            console.log(result); // Debugging
-            console.log(result["link"]); // Debugging
-
-            $("#create-successful").append(
-                "<div><span class=\"bold\">Success</span>. " +
-                "The resource has been created. You can access it <a href=\"" + result + "\">here</a>" +
-                "</div>"
-            )
+        success: function(result) {
+            //    Should get the link to the new detail page and display it
+            // console.log(result); // Debugging
+            // console.log(result["link"]); // Debugging
+            let new_link = result["link"];
+            clean_input();
+            $("#title-input").focus();
+            display_new_link(new_link);
         },
         error: function(request, status, error) {
             console.log("Error");
