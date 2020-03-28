@@ -53,6 +53,7 @@ function search_fragment(fragment){
 }
 
 function warn_no_string() {
+    $("#search-warning").empty();
     let no_string_message = "Please input a term to search for in the search box. Then click on \"Go\"."
-    $("#search-warning").append("<div class=\"warning\" offset-1 col-10 offset-md-8 col-md-4>" + no_string_message + "</div>");
+    $("#search-warning").append("<div class=\"warning offset-1 col-10 offset-md-8 col-md-4\">" + no_string_message + "</div>");
 }

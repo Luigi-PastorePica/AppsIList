@@ -1,4 +1,3 @@
-// let new_link;
 $(document).ready(function(){
 
     $(".active").removeClass("active")
@@ -103,7 +102,8 @@ $(document).ready(function(){
 function preventDefault(event) {
     event.preventDefault();
 };
-// Temporary solution until I can figure out how to make Bootstrap forms submit functionality work nicely  JQuery.append
+
+// Temporary solution until I can figure out how to make Bootstrap forms submit functionality work nicely with JQuery.append
 function clean_input(){
     $("#title-input").val('');
     $("#media-link-input").val('');
@@ -127,7 +127,8 @@ function submit_new(){
     new_item["title"] = $("#title-input").val();
     new_item["media"] = $("#media-link-input").val();
     new_item["description"] = $("#description-input").val();
-    // Learned how to extract value of selected radio input https://www.tutorialrepublic.com/faq/how-to-get-the-value-of-selected-radio-button-using-jquery.php
+    // Learned how to extract value of selected radio input
+    // https://www.tutorialrepublic.com/faq/how-to-get-the-value-of-selected-radio-button-using-jquery.php
     new_item["numerical"] = $("input[name='rating-selection']:checked").val();
     new_item["external_link"] = $("#external-link-input").val();
     new_item["list_elem"] = $("#review-input").val();
@@ -140,7 +141,7 @@ function submit_new(){
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify(new_item),
         success: function(result) {
-            //    Should get the link to the new detail page and display it
+            // Should get the link to the new detail page and display it
             // console.log(result); // Debugging
             // console.log(result["link"]); // Debugging
             let new_link = result["link"];

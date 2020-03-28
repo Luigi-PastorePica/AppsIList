@@ -5,7 +5,7 @@ from csv import DictReader, DictWriter
 from json import dumps as dumps
 
 db = []
-current_id = 11  # TODO get from last item in csv file
+current_id = 12  # TODO get from last item in csv file
 fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]
 
 NEWEST_ITEMS = 10
@@ -20,6 +20,8 @@ def go_to_home():
     with open("data.csv", "r") as csvfile:
         reader = DictReader(csvfile)
         for row in reader:
+            row["list"] = row["list"].strip("[]")
+            row["list"] = row["list"].split("','")
             db.append(row)
     newest = db[- NEWEST_ITEMS:]
     # print(type(newest))
@@ -40,6 +42,8 @@ def go_to_view(id_str=None):
             # print(item)  # Debugging
             details = item
             break
+    # details["list"] = details["list"].strip("[]")
+    # details["list"] = details["list"].split("', ")
     print(details)
     return render_template("view_details.html", details=details)
 
@@ -109,12 +113,13 @@ def search(search_str=None):
     #
     # print(search_results)
 
+    search_str_lower = search_str.lower()
     title_results = []
     content_results = []
     for item in db:
-        if search_str in item["title"].lower():
+        if search_str_lower in item["title"].lower():
             title_results.append(item)
-        elif search_str in item["description"].lower():
+        elif search_str_lower in item["description"].lower():
             content_results.append(item)
     print(title_results)
     print(content_results)
