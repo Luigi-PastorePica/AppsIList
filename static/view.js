@@ -1,3 +1,5 @@
+
+
 $(document).ready(function(){
 
     render_view();
@@ -5,6 +7,10 @@ $(document).ready(function(){
     $("#edit-description").on("click", function(){
         make_description_editable();
     });
+
+    $("#edit-link").on("click", function () {
+        make_external_link_editable();
+    })
 
     //TODO make these functions be generic.
     $("#submit-changes").on("click", function(){
@@ -35,29 +41,69 @@ $(document).ready(function(){
 });
 
 function render_view(){
+    console.log(details);
+    let reviews = JSON.parse(details["list"]);
+    let user_ids = Object.keys(reviews);
+    let rating_cumulative = parseFloat(details["numerical"]);
+    let nbr_of_reviews = user_ids.length;
+    let rating_avg = rating_cumulative / nbr_of_reviews;
+    console.log(rating_cumulative);
+    console.log(nbr_of_reviews);
+    console.log(rating_avg);
     $("#title").append(details["title"]);
-    $("#rating").append(details["numerical"]);
+    $("#rating").append("Usefulness: " + rating_avg.toString());
     $("#media").append("<img class=\"img-fluid\" src=\"" + details["media"] + "\">");
-    $("#description").prepend("<p>" + details["description"] + "</p>");
+    // $("#description").prepend("<p>" + details["description"] + "</p>");
+    $("#description").prepend(details["description"]);
     $("#visit-site").prepend("<a href=\"" + details["external_link"] + "\" target=\"_blank\">Visit the original site</a>");
-    // details_list = details["list"].split("', ");
-    // for(let list_index in details_list){
-    //     console.log(typeof(details_list));
-    //     console.log((details_list));
-    //     // console.log(typeof(details["list"][list_index]));
-    //     // console.log(details["list"][list_index]);
-    //     $("#list").append("<div class=\"col-12\">" + details_list[list_index] + "</div>");
-    for(let list_idx in details["list"]){
-        console.log("type of details[\"list\"]" + typeof(details["list"])); // Debugging
-        console.log("details[\"list\"]" + details["list"]); // Debugging
-        console.log("type of details[\"list\"][list_idx]" + typeof(details["list"][list_idx])); // Debugging
-        console.log("details[\"list\"][list_idx]" + details["list"][list_idx]); // Debugging
-        details["list"][list_idx] = trim_quotes(details["list"][list_idx]);
-        console.log("details[\"list\"][list_idx]" + details["list"][list_idx]); // Debugging
-        $("#list").append("<div class=\"col-12\">" + details["list"][list_idx] + "</div>");
+
+    // console.log(reviews); // Debugging
+    // console.log(user_ids); // Debugging
+    // console.log(reviews[user_ids[0]]); // Debugging
+
+    for(let id in user_ids){
+        let review_row_html =
+            "<div class=\"col-12\">" +
+            "<div class=\"row\">" +
+            "<div class=\"col-3\"> User ID: " + user_ids[id] + "</div>" +
+            "<div class=\"text-left col-9\">Usefulness: " + reviews[user_ids[id]]["rtng"] + "</div>" +
+            "</div>" +
+            "<div class=\"row\">" +
+            "<div class=\"col-11\">" + reviews[user_ids[id]]["review"] + "</div>" +
+            "<div class=\"col-1\">" +
+            "<button id=\"delete-review-" + user_ids[id] + "\">Delete" +
+            "</button>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
+        $("#list").append(review_row_html);
+        // $("#list").append("<div class=\"col-4\"> User ID: " + user_ids[id] + "</div>");
+        // $("#list").append("<div class=\"text-left col-8\">" + reviews[user_ids[id]]["rtng"] + "</div>");
+        // $("#list").append("<div class=\"col-12\">" + reviews[user_ids[id]]["review"] + "</div>");
     }
+
 }
 
+// TODO These two below can be combined and passed the id.
+function make_description_editable(){
+    let parent = $("#edit-description").parent();
+    parent.empty();
+    parent.append("<textarea class=\"editable-textarea\" rows=\"11\">" + details["description"] + "</textarea>");
+    $("textarea").focus();
+    parent.append("<button id=\"submit-changes\">Submit</button>");
+    parent.append("<button id=\"discard-changes\">Discard</button>");
+}
+
+function make_external_link_editable(){
+    let parent = $("#edit-link").parent();
+    parent.empty();
+    parent.append("<textarea class=\"editable-textarea\">" + details["external_link"] + "</textarea>");
+    $("textarea").focus();
+    parent.append("<button id=\"submit-changes\">Submit</button>");
+    parent.append("<button id=\"discard-changes\">Discard</button>");
+}
+
+// Not used anymore, but can come in handy in the future.
 function trim_quotes(string){
     let start = 0;
     let end = string.length - 1;
@@ -71,12 +117,3 @@ function trim_quotes(string){
     return string.slice(start, end + 1)
 }
 
-function make_description_editable(){
-    alert("i was called!!!")
-    let parent = $("#edit-description").parent();
-    parent.empty();
-    parent.append("<textarea>" + details["description"] + "</textarea>");
-    $("textarea").focus();
-    parent.append("<button id=\"submit-changes\">Submit</button>");
-    parent.append("<button id=\"discard-changes\">Discard</button>");
-}

@@ -31,10 +31,19 @@
     font-size: 18px;
 }
 
+.reviews-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .highlight-string {
     font-weight: bold;
     font-size: larger;
     background-color: darkgray;
+}
+
+.editable-textarea{
+    width: 100%;
 }
 /*nav.navbar {*/
 /*    width: inherit;*/

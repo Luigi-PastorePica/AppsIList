@@ -129,11 +129,18 @@ function submit_new(){
     new_item["description"] = $("#description-input").val();
     // Learned how to extract value of selected radio input
     // https://www.tutorialrepublic.com/faq/how-to-get-the-value-of-selected-radio-button-using-jquery.php
-    new_item["numerical"] = $("input[name='rating-selection']:checked").val();
+    let rating = $("input[name='rating-selection']:checked").val();
+    new_item["numerical"] = rating;
     new_item["external_link"] = $("#external-link-input").val();
-    new_item["list_elem"] = $("#review-input").val();
-
-    // console.log(JSON.stringify(new_item));
+    // new_item["list_elem"] = $("#review-input").val();
+    let review = $("#review-input").val();
+    new_item["list_elem"] = {};
+    // This is used only to associate reviews to unique users.
+    // Must be replaced by proper user id if the functionality is implemented in the future
+    // A user should be able to leave only one review for a product or change their own review.
+    let user_id = generate_placeholder_id();
+    new_item["list_elem"][user_id] = {"rtng": rating, "review": review};
+    console.log(JSON.stringify(new_item));
     $.ajax({
         type: "POST",
         url: "add_item",
@@ -157,3 +164,10 @@ function submit_new(){
         }
     });
 };
+
+// This function returns an integer between 1 and 1000 at random to be used as user id .
+// It is not intended for production code.
+function generate_placeholder_id() {
+    // Copied randomizer from https://www.w3schools.com/js/js_random.asp
+    return Math.floor(Math.random() * 1000) + 1;
+}

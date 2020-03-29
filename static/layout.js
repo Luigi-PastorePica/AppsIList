@@ -13,7 +13,7 @@ $(document).ready(function(){
     });
 
     // let fragment_url = "/auto/" + fragment;
-    $("#search-input").autocomplete("option", "source", "/auto/");
+    // $("#search-input").autocomplete("option", "source", "/auto/");
 })
 
 

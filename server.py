@@ -3,6 +3,7 @@ from flask import render_template
 from flask import Response, request, jsonify
 from csv import DictReader, DictWriter
 from json import dumps as dumps
+from copy import deepcopy as deepcopy
 
 db = []
 current_id = 12  # TODO get from last item in csv file
@@ -20,8 +21,9 @@ def go_to_home():
     with open("data.csv", "r") as csvfile:
         reader = DictReader(csvfile)
         for row in reader:
-            row["list"] = row["list"].strip("[]")
-            row["list"] = row["list"].split("','")
+            # row["list"] = row["list"].strip("[]")
+            # row["list"] = row["list"].split("','")
+            row["list"] = eval(row["list"])  # String to Dict
             db.append(row)
     newest = db[- NEWEST_ITEMS:]
     # print(type(newest))
@@ -33,18 +35,26 @@ def go_to_home():
 
 @app.route('/view/<id_str>')
 def go_to_view(id_str=None):
+    print("VIEW")
     id_nbr = int(id_str)
     details = {}
-    for item in db:  # TODO Use hashmap instead for efficiency.
+    for item in db:  # TODO Use hashmap or another search method instead for efficiency.
         if int(item["id"]) == id_nbr:
             # print("item[\"id\"]: " + item["id"])  # Debugging
             # print("id_nbr: " + id_str)  # Debugging
             # print(item)  # Debugging
-            details = item
+            details = deepcopy(item)
             break
     # details["list"] = details["list"].strip("[]")
     # details["list"] = details["list"].split("', ")
-    print(details)
+    # print(type(details["list"]))
+    # print(details["list"])
+    # details["list"] = eval(details["list"])  # String to Dict
+    print(type(details["list"]))
+    print(details["list"])
+    details["list"] = dumps(details["list"])  # Dict to String
+    print(type(details["list"]))
+    print(details["list"])
     return render_template("view_details.html", details=details)
 
 @app.route('/create')
@@ -54,6 +64,7 @@ def go_to_create_item():
 
 @app.route('/add_item', methods=['POST'])
 def add_item():
+    print("ADD ITEM")
     global current_id
     global db
     item_row = {}
@@ -70,8 +81,14 @@ def add_item():
             item_row[field_name] = current_id
         elif field_name == "list":
             # print("I am inside the list conditional statement")  # Debugging
-            item_row[field_name] = []
-            item_row[field_name].append(json_data["list_elem"])
+            # item_row[field_name] = []
+            # item_row[field_name].append(json_data["list_elem"])
+            print(type(json_data["list_elem"]))
+            print(json_data["list_elem"])
+            print(dumps(json_data["list_elem"]))
+            # user_id = json_data["list_elem"].keys();
+            # json_data["list_elem"][list(user_id)[0]]["mark_as_deleted"] = False
+            item_row[field_name] = dumps(json_data["list_elem"])  # Dict to String
         elif field_name is None or json_data[field_name] is None:
             item_row[field_name] = None
         else:
@@ -92,9 +109,14 @@ def add_item():
         current_id -= 1
         # TODO return something that tells the user the record could not be created
         raise e
-
+    print("APPEND TO DB")
+    # db.append(item_row) # NOOO this is the thing that is causing inconsistencies.
+    print(type(item_row["list"]))
+    print(item_row["list"])
+    item_row["list"] = eval(item_row["list"])
     db.append(item_row)
-
+    print(type(item_row["list"]))
+    print(item_row["list"])
     new_link = "view/" + str(current_id)
     # print(new_link)  # Debugging
     # send back the link to the new page so the client can be redirected there
