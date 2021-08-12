@@ -7,7 +7,6 @@ from copy import deepcopy as deepcopy
 
 from mydatabase import MyDatabase as MyDatabase
 
-# db: list = []
 current_id = 12  # TODO get from last item in csv file
 fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]
 
@@ -15,18 +14,9 @@ NEWEST_ITEMS = 10
 
 app = Flask(__name__)
 
-
-# # Load entries in "database" into memory
-# def load_data():
-#     with open("data.csv", "r") as csvfile:
-#         reader = DictReader(csvfile)
-#         for row in reader:
-#             row["list"] = eval(row["list"])  # String to Dict
-#             db.append(row)
-
 db_file_path = "data.csv"
 mdb = MyDatabase(db_file_path)
-db: list = mdb.load_data()
+db: [list] = mdb.load_basic_data()
 
 
 @app.route('/')
@@ -34,43 +24,45 @@ def go_to_home():
     # TODO Explore a more efficient way of updating the data loaded in memory
     global db
     db.clear()
-    db = mdb.load_data()
+    db = mdb.load_basic_data()
 
-    # with open("data.csv", "r") as csvfile:
-    #     reader = DictReader(csvfile)
-    #     for row in reader:
-    #         row["list"] = eval(row["list"])  # String to Dict
-    #         db.append(row)
     newest = db[- NEWEST_ITEMS:]
-    # print(type(newest))
-    # print(type(newest[0]))
-    # print(type(dumps(newest)))
-    # print(dumps(newest, indent=2))
+    # print(type(newest))  # Debugging
+    # print(type(newest[0]))  # Debugging
+    # print(type(dumps(newest)))  # Debugging
+    # print(dumps(newest, indent=2))  # Debugging
     return render_template("home.html", newest=newest)
-
 
 @app.route('/view/<id_str>')
 def go_to_view(id_str=None):
     print("VIEW")
     global db
     id_nbr = int(id_str)
-    details = {}
-    for item in db:  # TODO Use hashmap or another search method instead for efficiency.
+    details = {}  # TODO this should use id_str to pull resource details from database and place them in DetailedResource obj.
+
+    # This is how detailed info used to be obtained; i.e. from the already loaded in-memory db.
+    '''
+    for item in db:  # TODO Use hashmap or another search method instead for efficiency. Note: can be fixed by using RDB
         if int(item["id"]) == id_nbr:
             # print("item[\"id\"]: " + item["id"])  # Debugging
             # print("id_nbr: " + id_str)  # Debugging
             # print(item)  # Debugging
             details = deepcopy(item)
             break
+    '''
+    details = mdb.load_detailed_resource(id_nbr)
+    print("item with id {}: {}".format(id_nbr, details))
+
     # TODO Last time I left here
     # for review in details["list"]:
 
-    print(type(details["list"]))  # Debugging
-    print(details["list"])  # Debugging
+    # print(type(details["list"]))  # Debugging
+    # print(details["list"])  # Debugging
     details["list"] = dumps(details["list"])  # Dict to String
-    print(type(details["list"]))  # Debugging
-    print(details["list"])  # Debugging
+    # print(type(details["list"]))  # Debugging
+    # print(details["list"])  # Debugging
     return render_template("view_details.html", details=details)
+
 
 @app.route('/create')
 def go_to_create_item():
