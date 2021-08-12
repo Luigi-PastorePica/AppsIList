@@ -5,7 +5,9 @@ from csv import DictReader, DictWriter
 from json import dumps as dumps
 from copy import deepcopy as deepcopy
 
-db = []
+from mydatabase import MyDatabase as MyDatabase
+
+# db: list = []
 current_id = 12  # TODO get from last item in csv file
 fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]
 
@@ -14,23 +16,26 @@ NEWEST_ITEMS = 10
 app = Flask(__name__)
 
 
-# Load entries in "database" into memory
-def load_data():
-    with open("data.csv", "r") as csvfile:
-        reader = DictReader(csvfile)
-        for row in reader:
-            row["list"] = eval(row["list"])  # String to Dict
-            db.append(row)
+# # Load entries in "database" into memory
+# def load_data():
+#     with open("data.csv", "r") as csvfile:
+#         reader = DictReader(csvfile)
+#         for row in reader:
+#             row["list"] = eval(row["list"])  # String to Dict
+#             db.append(row)
 
-
-load_data()
+db_file_path = "data.csv"
+mdb = MyDatabase(db_file_path)
+db: list = mdb.load_data()
 
 
 @app.route('/')
 def go_to_home():
     # TODO Explore a more efficient way of updating the data loaded in memory
+    global db
     db.clear()
-    load_data()
+    db = mdb.load_data()
+
     # with open("data.csv", "r") as csvfile:
     #     reader = DictReader(csvfile)
     #     for row in reader:
@@ -47,6 +52,7 @@ def go_to_home():
 @app.route('/view/<id_str>')
 def go_to_view(id_str=None):
     print("VIEW")
+    global db
     id_nbr = int(id_str)
     details = {}
     for item in db:  # TODO Use hashmap or another search method instead for efficiency.
