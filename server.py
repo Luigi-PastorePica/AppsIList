@@ -14,17 +14,28 @@ NEWEST_ITEMS = 10
 app = Flask(__name__)
 
 
-@app.route('/')
-def go_to_home():
-    # Load entries in "database" into memory
-    db.clear()
+# Load entries in "database" into memory
+def load_data():
     with open("data.csv", "r") as csvfile:
         reader = DictReader(csvfile)
         for row in reader:
-            # row["list"] = row["list"].strip("[]")
-            # row["list"] = row["list"].split("','")
             row["list"] = eval(row["list"])  # String to Dict
             db.append(row)
+
+
+load_data()
+
+
+@app.route('/')
+def go_to_home():
+    # TODO Explore a more efficient way of updating the data loaded in memory
+    db.clear()
+    load_data()
+    # with open("data.csv", "r") as csvfile:
+    #     reader = DictReader(csvfile)
+    #     for row in reader:
+    #         row["list"] = eval(row["list"])  # String to Dict
+    #         db.append(row)
     newest = db[- NEWEST_ITEMS:]
     # print(type(newest))
     # print(type(newest[0]))
@@ -45,16 +56,14 @@ def go_to_view(id_str=None):
             # print(item)  # Debugging
             details = deepcopy(item)
             break
-    # details["list"] = details["list"].strip("[]")
-    # details["list"] = details["list"].split("', ")
-    # print(type(details["list"]))
-    # print(details["list"])
-    # details["list"] = eval(details["list"])  # String to Dict
-    print(type(details["list"]))
-    print(details["list"])
+    # TODO Last time I left here
+    # for review in details["list"]:
+
+    print(type(details["list"]))  # Debugging
+    print(details["list"])  # Debugging
     details["list"] = dumps(details["list"])  # Dict to String
-    print(type(details["list"]))
-    print(details["list"])
+    print(type(details["list"]))  # Debugging
+    print(details["list"])  # Debugging
     return render_template("view_details.html", details=details)
 
 @app.route('/create')
@@ -81,13 +90,12 @@ def add_item():
             item_row[field_name] = current_id
         elif field_name == "list":
             # print("I am inside the list conditional statement")  # Debugging
-            # item_row[field_name] = []
-            # item_row[field_name].append(json_data["list_elem"])
             print(type(json_data["list_elem"]))
             print(json_data["list_elem"])
             print(dumps(json_data["list_elem"]))
-            # user_id = json_data["list_elem"].keys();
-            # json_data["list_elem"][list(user_id)[0]]["mark_as_deleted"] = False
+            user_id = json_data["list_elem"].keys();
+            # Using string instead of boolean simplifies storage and retrieval from a csv file
+            json_data["list_elem"][list(user_id)[0]]["mark_as_deleted"] = "False"
             item_row[field_name] = dumps(json_data["list_elem"])  # Dict to String
         elif field_name is None or json_data[field_name] is None:
             item_row[field_name] = None
@@ -117,23 +125,26 @@ def add_item():
     db.append(item_row)
     print(type(item_row["list"]))
     print(item_row["list"])
+
+    # try:
+    #     print(type(item_row["list"]))
+    #     print(item_row["list"])
+    #     item_row["list"] = eval(item_row["list"])
+    #     db.append(item_row)
+    #     print(type(item_row["list"]))
+    #     print(item_row["list"])
+    # except NameError as e:
+    #     if
     new_link = "view/" + str(current_id)
     # print(new_link)  # Debugging
     # send back the link to the new page so the client can be redirected there
     return jsonify(link=new_link)
-    # return render_template("view_details.html", item_row=item_row)
 
 
 @app.route('/search/<search_str>', methods=['GET'])
 def search(search_str=None):
-    # str = search_str.parse???
-    print(search_str)
-    # search_results = []
-    # for item in db:
-    #     if search_str in item["title"].lower() or search_str in item["description"].lower():
-    #         search_results.append(item)
-    #
-    # print(search_results)
+
+    print(search_str)  # Debugging
 
     search_str_lower = search_str.lower()
     title_results = []
@@ -143,11 +154,13 @@ def search(search_str=None):
             title_results.append(item)
         elif search_str_lower in item["description"].lower():
             content_results.append(item)
-    print(title_results)
-    print(content_results)
 
-    # return jsonify(search_results=search_results);
-    return render_template("search_results.html", search_str=search_str, title_results=title_results, content_results=content_results)
+    print(title_results)  # Debugging
+    print(content_results)  # Debugging
+
+    return render_template("search_results.html", search_str=search_str,
+                           title_results=title_results, content_results=content_results)
+
 
 @app.route('/auto/<fragment_str>')
 def provide_autocomplete(fragment_str=None):
@@ -158,6 +171,7 @@ def provide_autocomplete(fragment_str=None):
 
     print(search_results)
     return jsonify(search_results=search_results)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -90,8 +90,8 @@ function make_description_editable(){
     parent.empty();
     parent.append("<textarea class=\"editable-textarea\" rows=\"11\">" + details["description"] + "</textarea>");
     $("textarea").focus();
-    parent.append("<button id=\"submit-changes\">Submit</button>");
-    parent.append("<button id=\"discard-changes\">Discard</button>");
+    parent.append("<button type=\"button\" id=\"submit-changes\" class=\"btn btn-outline-success\">Submit</button>");
+    parent.append("<button type=\"button\" id=\"discard-changes\" class=\"btn btn-outline-danger\">Discard</button>");
 }
 
 function make_external_link_editable(){
