@@ -4,7 +4,9 @@ from copy import deepcopy as deepcopy
 
 # db = []
 current_id = 12  # TODO get from last item in csv file
+# TODO need to add a "resource_type" field (e.g. book, blogpost, video, course, etc.). This would work for the basic view.
 fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]  # TODO Handle differently
+basic_fieldnames = ["id", "title", "media", "numerical"]  # TODO Handle differently
 
 
 class MyDatabase:
@@ -14,13 +16,17 @@ class MyDatabase:
         self.db: [dict] = []  # TODO this should change to be a list of Resource objects.
 
     # TODO Load only basic info.
+    # TODO Too many levels of abstraction. Might need to extract functionality.
     # Load entries in "database" into memory
     def load_basic_data(self) -> list:
+        resource_basic: dict = {}
         with open(self.db_name, "r") as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
-                row["list"] = eval(row["list"])  # String to Dict for reviews
-                self.db.append(row)
+                # row["list"] = eval(row["list"])  # String to Dict for reviews # Not needed for basic data
+                for field in basic_fieldnames:
+                    resource_basic[field] = row[field]
+                self.db.append(deepcopy(resource_basic))
 
         return self.db
 
