@@ -8,7 +8,7 @@ from copy import deepcopy as deepcopy
 from mydatabase import MyDatabase as MyDatabase
 
 # current_id = 12  # TODO get from last item in csv file
-fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]
+# fieldnames = ["id", "title", "format","media", "description", "numerical", "external_link", "list"]
 
 NEWEST_ITEMS = 10
 
@@ -40,23 +40,11 @@ def go_to_view(id_str=None):
     print("VIEW")
     global db
     id_nbr = int(id_str)
-    details: dict = {}  # TODO this should use id_str to pull resource details from database and place them in DetailedResource obj.
+    details: dict = {}
 
-    # TODO Remove block: This is how detailed info used to be obtained; i.e. from the already loaded in-memory db.
-    '''
-    for item in db:  # TODO Use hashmap or another search method instead for efficiency. Note: can be fixed by using RDB
-        if int(item["id"]) == id_nbr:
-            # print("item[\"id\"]: " + item["id"])  # Debugging
-            # print("id_nbr: " + id_str)  # Debugging
-            # print(item)  # Debugging
-            details = deepcopy(item)
-            break
-    '''
     details = mdb.load_detailed_resource(id_nbr)
     print("item with id {}: {}".format(id_nbr, details))
 
-    # TODO Last time I left here. This is from back when I first did this project. No idea what this is about.
-    # for review in details["list"]:
 
     # print(type(details["list"]))  # Debugging
     # print(details["list"])  # Debugging

@@ -12,7 +12,8 @@
     <form id="create-form" class="offset-1 col-10">
         <div class="form-group\">
             <label for="title-input" class="mt-3">Title</label>
-            <input type="text" class="form-control editable-textarea" id="title-input" placeholder="Enter the title of the book">
+            <input type="text" class="form-control editable-textarea" id="title-input"
+                   placeholder="Enter the title of the resource">
             <span id="title-warning"></span>
         </div>
 <!--        <div class="form-group">-->
@@ -21,13 +22,20 @@
 <!--        </div>-->
         <div class="form-group\">
             <label for="media-link-input" class="mt-4">Link to image</label>
-            <input type="text" class="form-control editable-textarea" id="media-link-input" placeholder="Enter the link to the image">
+            <input type="text" class="form-control editable-textarea" id="media-link-input"
+                   placeholder="Enter the link to the image">
             <span id="media-link-warning"></span>
+        </div>
+        <div class="form-group\">
+            <label for="format-input" class="mt-4">Form of media</label>
+            <input type="text" class="form-control editable-textarea" id="format-input"
+                   placeholder="Enter the media format (e.g. Book, Video, etc.)">
+            <span id="format-warning"></span>
         </div>
         <div class="form-group">
             <label for="description-input" class="mt-4">Enter a description</label>
-            <textarea class="form-control editable-textarea" id="description-input" placeholder="Your description goes here" rows="5">
-            </textarea>
+            <textarea class="form-control editable-textarea" id="description-input"
+                      placeholder="Your description goes here" rows="5"></textarea>
             <span id="description-warning"></span>
         </div>
         <div class="mt-1">
@@ -58,13 +66,14 @@
         </div>
         <div class="form-group">
             <label for="review-input" class="mt-1">Enter your review</label>
-            <textarea class="form-control editable-textarea" id="review-input" placeholder="Your review goes here" rows="5">
-            </textarea>
+            <textarea class="form-control editable-textarea" id="review-input"
+                      placeholder="Your review goes here" rows="5"></textarea>
             <span id="review-warning"></span>
         </div>
         <div class="form-group\">
             <label for="external-link-input" class="mt-2">Link to original page</label>
-            <input type="text" class="form-control editable-textarea" id="external-link-input" placeholder="Link to the resource's original page">
+            <input type="text" class="form-control editable-textarea"
+                   id="external-link-input" placeholder="Link to the resource's original page">
             <span id="external-link-warning"></span>
         </div>
 <!--        <button type="submit" id="submit-button" class="btn btn-primary">Submit</button>-->

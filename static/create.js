@@ -35,6 +35,16 @@ $(document).ready(function(){
                 $("#media-link-warning").html("");
                 values_missing = false
             }
+            if ($("#format-input").val().trim() == '') {
+                $("#format-warning").addClass("warning");
+                $("#format-warning").html("Format field cannot be empty or consist of whitespaces");
+                $("#format-input").focus();
+                values_missing = true
+            } else {
+                $("#format-warning").removeClass("warning");
+                $("#format-warning").html("");
+                values_missing = false
+            }
             if ($("#description-input").val().trim() == '') {
                 $("#description-warning").addClass("warning");
                 $("#description-warning").html("Description field cannot be empty or consist of whitespaces");
@@ -107,6 +117,7 @@ function preventDefault(event) {
 function clean_input(){
     $("#title-input").val('');
     $("#media-link-input").val('');
+    $("#format-input").val('');
     $("#description-input").val('');
     // Incredibly helpful here https://stackoverflow.com/questions/977137/how-to-reset-radiobuttons-in-jquery-so-that-none-is-checked
     $('input[name="rating-selection"]').prop('checked', false);
@@ -126,6 +137,7 @@ function submit_new(){
     let new_item = {};
     new_item["title"] = $("#title-input").val();
     new_item["media"] = $("#media-link-input").val();
+    new_item["format"] = $("#format-input").val();
     new_item["description"] = $("#description-input").val();
     // Learned how to extract value of selected radio input
     // https://www.tutorialrepublic.com/faq/how-to-get-the-value-of-selected-radio-button-using-jquery.php

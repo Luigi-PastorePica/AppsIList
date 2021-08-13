@@ -5,8 +5,8 @@ from copy import deepcopy as deepcopy
 from resource import Resource as Resource
 
 # TODO need to add a "resource_type" field (e.g. book, blogpost, video, course, etc.). This would work for the basic view.
-fieldnames = ["id", "title", "media", "description", "numerical", "external_link", "list"]  # TODO Handle differently
-basic_fieldnames = ["id", "title", "media", "numerical"]  # TODO Handle differently
+fieldnames = ["id", "title", "format", "media", "description", "numerical", "external_link", "list"]  # TODO Handle differently
+basic_fieldnames = ["id", "title", "format", "media", "numerical"]  # TODO Handle differently
 
 
 class MyDatabase:
