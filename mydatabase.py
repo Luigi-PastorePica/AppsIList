@@ -4,25 +4,31 @@ from copy import deepcopy as deepcopy
 
 from resource import Resource as Resource
 
-# TODO need to add a "resource_type" field (e.g. book, blogpost, video, course, etc.). This would work for the basic view.
-fieldnames = ["id", "title", "format", "media", "description", "numerical", "external_link", "list"]  # TODO Handle differently
-basic_fieldnames = ["id", "title", "format", "media", "numerical"]  # TODO Handle differently
-
+# TODO Handle differently. Create a class method that retrieves fieldnames from db headers.
+fieldnames = ["id", "title", "format", "media", "description", "numerical", "external_link", "list"]
+basic_fieldnames = ["id", "title", "format", "media", "numerical"]
 
 class MyDatabase:
+    """
+    Handles interactions with the database for the AppsIList web application.
+    """
 
     def __init__(self, file_name: str):
+        """
+        Constructor for the MyDatabase class.
+
+        :param file_name: A string containing the path to the CSV file.
+        """
         self.db_name = file_name
         self.db: [dict] = []  # TODO this should change to be a list of Resource objects.
         self.current_id = self.get_newest_id()
 
-    def load_basic_data(self) -> list:
-        '''
-        Loads basic data from entries in the "database" into memory
+    def load_basic_data(self) -> [dict]:
+        """
+        Loads basic data from entries in the "database" into memory.
 
-        Returns:
-            self.db ([dict]): A list of dictionaries. Each dictionary holds basic data for one database entry
-        '''
+        :return self.db: A list of dictionaries. Each dictionary holds basic data for one database entry/row.
+        """
 
         # TODO Too many levels of abstraction. Might need to extract functionality.
         resource_basic: dict = {}
@@ -35,6 +41,12 @@ class MyDatabase:
         return self.db
 
     def load_detailed_resource(self, rid: int) -> dict:
+        """
+        Loads all information in the database for a single resource. The resource is identified by rid.
+
+        :param rid: An integer that represents the unique resource id in the database.
+        :return resource_data: A dictionary containing a single resource's information.
+        """
 
         # TODO consider case where rid is not found. This should not happen, but still, it is good to have a backup
         resource_data: dict = {}
@@ -51,8 +63,14 @@ class MyDatabase:
         return resource_data
 
     def load_data(self) -> [dict]:
-        '''Load entries in "database" into memory'''
-        # TODO Deprecate..... maybe
+        """
+        Load entries in database into memory.
+        Note: This method is not in use and it remains to be seen whether there are cases where can still be useful.
+
+        :return self.db: A dictionary containing all data from all entries in the database.
+        """
+
+        # TODO Be on the lookout for cases where this method might be useful. If not, eventually deprecate.
         with open(self.db_name, "r") as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
@@ -62,7 +80,13 @@ class MyDatabase:
         return self.db
 
     def get_newest_id(self) -> int:
-        # TODO This is a hack, find if there is a more efficient way of doing this
+        """
+        Retrieves the highest id in the database
+
+        :return newest_id: An integer representing the highest id in the database.
+        """
+
+        # TODO This is a hacky implementation. Find a more efficient way of doing this
         newest_id = 0
         with open(self.db_name, "r") as csvfile:
             reader = DictReader(csvfile)
@@ -72,6 +96,13 @@ class MyDatabase:
         return newest_id
 
     def add_resource(self, resource_data: dict) -> int:
+        """
+        Adds a new resource to the database based on the information contained in resource_data.
+
+        :param resource_data: A dictionary containing all data fields for the entry that needs to be created in the db.
+        :return newest_id: The unique id for the newly created entry, regardless of success or failure in creating said
+        entry.
+        """
 
         item_row = self.format_new_resource(resource_data)
         # print("resource_data (previously json_data):\n{}".format(resource_data))  # Debugging
@@ -88,7 +119,7 @@ class MyDatabase:
                 writer.writeheader()
                 writer.writerow(item_row)
         except Exception as e:
-            # TODO return something that tells the user the record could not be created
+            # TODO return exception/error that tells the user the record could not be created
             raise e
 
         newest_id = int(item_row["id"])
@@ -96,21 +127,19 @@ class MyDatabase:
         if newest_id == self.get_newest_id():
             self.current_id = self.get_newest_id()
         else:
-            # TODO Find a way to notify that something went wrong
+            # newest_id -= 1
+            # TODO Find an appropriate error/exception to notify that something went wrong
             pass
 
         return newest_id
 
     def format_new_resource(self, resource_data: dict) -> dict:
-        '''
-        Creates a new row/entry for the database in a dictionary format
+        """
+        Properly formats a new row/entry for the database.
 
-            Parameters:
-                resource_data(dict): Contains the data of the record to be added to the database.
-
-            Returns:
-                item_row(dict): Contains properly formatted data for the new record to be added to the database
-        '''
+        :param resource_data: A dictionary containing all the data of the record to be added to the database.
+        :returns item_row: A dictionary holding properly formatted data for the entry to be added to the database.
+        """
 
         newest_id = self.current_id + 1
         item_row: dict = {}
@@ -135,11 +164,15 @@ class MyDatabase:
         return item_row
 
     def search_for_string(self, search_str:str) -> ([dict], [dict]):
-        '''
-        Searches for occurrences of the given string in the database
+        """
+        Searches for occurrences of the given string in the database. Currently it looks in title and description.
 
+        :param search_str: A string containing a word or word fraction to be searched in the database's entries.
 
-        '''
+        :return results: A tuple containing two lists. The first list holds one dictionary per database entry that
+        contains search_str in its title. The second list holds one dictionary per database entry that contains
+        search_str in other fields (currently only in the description).
+        """
 
         search_str_lower = search_str.lower()
         title_results: [dict] = []
@@ -151,6 +184,7 @@ class MyDatabase:
         with open(self.db_name, "r") as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
+                # TODO Extract conditional into its own method
                 if search_str_lower in row["title"].lower():
                     for field in basic_fieldnames:
                         resource_basic[field] = row[field]

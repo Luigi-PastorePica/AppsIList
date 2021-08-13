@@ -1,14 +1,10 @@
 from flask import Flask
 from flask import render_template
 from flask import Response, request, jsonify
-from csv import DictReader, DictWriter
 from json import dumps as dumps
-from copy import deepcopy as deepcopy
 
 from mydatabase import MyDatabase as MyDatabase
 
-# current_id = 12  # TODO get from last item in csv file
-# fieldnames = ["id", "title", "format","media", "description", "numerical", "external_link", "list"]
 
 NEWEST_ITEMS = 10
 
@@ -17,12 +13,17 @@ app = Flask(__name__)
 db_file_path = "data.csv"
 mdb = MyDatabase(db_file_path)
 db: [dict] = mdb.load_basic_data()
-current_id = mdb.get_newest_id()
+# current_id = mdb.get_newest_id()
 
 
 @app.route('/')
 def go_to_home():
-    # TODO Explore a more efficient way of updating the data loaded in memory
+    """
+    Prepares and displays the landing/home page. It displays at most the NEWEST_ITEMS number of entries.\
+
+    :return: Renders the home page.
+    """
+
     global db
     db.clear()
     db = mdb.load_basic_data()
@@ -37,6 +38,12 @@ def go_to_home():
 
 @app.route('/view/<id_str>')
 def go_to_view(id_str=None):
+    """
+    Display the details page for the resource with identifier equal to the integer representation of id_str.
+
+    :param id_str: A string representing the unique identifier of a resource stored in the database.
+    :return: Renders the item detail view for the resource with id equal to the integer value of id_str.
+    """
     print("VIEW")
     global db
     id_nbr = int(id_str)
@@ -56,12 +63,23 @@ def go_to_view(id_str=None):
 
 @app.route('/create')
 def go_to_create_item():
+    """
+    Displays the page with the form to add a new resource to the database.
+
+    :return: Render the page with the form to add a new resource to the database.
+    """
     return render_template("create.html")
 
 
 @app.route('/add_item', methods=['POST'])
 def add_item():
-    print("ADD ITEM")
+    """
+    Sends request to add new entry in the database.
+
+    :return: A string containing the link to the details page of the newly created resource.
+    """
+
+    print("ADD ITEM") # Debugging
 
     json_data = request.get_json()
     # print("json_data: {}".format(json_data))  # Debugging
@@ -76,6 +94,12 @@ def add_item():
 
 @app.route('/search/<search_str>', methods=['GET'])
 def search(search_str=None):
+    """
+    Searches for the given string in all entries in the database
+
+    :param search_str: The string containing the word or word fragment to search for.
+    :return: Display the search results page.
+    """
 
     title_results, content_results = mdb.search_for_string(search_str)
 
@@ -85,6 +109,11 @@ def search(search_str=None):
 
 @app.route('/auto/<fragment_str>')
 def provide_autocomplete(fragment_str=None):
+    """
+    Provide autocomplete for the search functionality. Not in use yet.
+    :param fragment_str: A string containing the partially written search term.
+    :return: A JSON formatted search results list.
+    """
     search_results = []
     for item in db:
         if fragment_str in item["title"].lower() or fragment_str in item["description"].lower():
