@@ -89,19 +89,7 @@ def add_item():
 @app.route('/search/<search_str>', methods=['GET'])
 def search(search_str=None):
 
-    print(search_str)  # Debugging
-
-    search_str_lower = search_str.lower()
-    title_results = []
-    content_results = []
-    for item in db:
-        if search_str_lower in item["title"].lower():
-            title_results.append(item)
-        elif search_str_lower in item["description"].lower():
-            content_results.append(item)
-
-    print(title_results)  # Debugging
-    print(content_results)  # Debugging
+    title_results, content_results = mdb.search_for_string(search_str)
 
     return render_template("search_results.html", search_str=search_str,
                            title_results=title_results, content_results=content_results)

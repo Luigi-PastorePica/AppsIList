@@ -17,7 +17,13 @@ class MyDatabase:
         self.current_id = self.get_newest_id()
 
     def load_basic_data(self) -> list:
-        '''Loads basic data from entries in the "database" into memory'''
+        '''
+        Loads basic data from entries in the "database" into memory
+
+        Returns:
+            self.db ([dict]): A list of dictionaries. Each dictionary holds basic data for one database entry
+        '''
+
         # TODO Too many levels of abstraction. Might need to extract functionality.
         resource_basic: dict = {}
         with open(self.db_name, "r") as csvfile:
@@ -28,8 +34,9 @@ class MyDatabase:
                 self.db.append(deepcopy(resource_basic))
         return self.db
 
-    # TODO consider case where rid is not found. This should not happen, but still, it is good to have a backup
     def load_detailed_resource(self, rid: int) -> dict:
+
+        # TODO consider case where rid is not found. This should not happen, but still, it is good to have a backup
         resource_data: dict = {}
         rid_str = str(rid)  # This conversion will be done away with when db transitions into using RDB instead of csv.
         with open(self.db_name, "r") as csvfile:
@@ -43,9 +50,9 @@ class MyDatabase:
 
         return resource_data
 
-    # TODO Deprecate..... maybe
     def load_data(self) -> [dict]:
         '''Load entries in "database" into memory'''
+        # TODO Deprecate..... maybe
         with open(self.db_name, "r") as csvfile:
             reader = DictReader(csvfile)
             for row in reader:
@@ -126,3 +133,33 @@ class MyDatabase:
                 item_row[field_name] = resource_data[field_name]
 
         return item_row
+
+    def search_for_string(self, search_str:str) -> ([dict], [dict]):
+        '''
+        Searches for occurrences of the given string in the database
+
+
+        '''
+
+        search_str_lower = search_str.lower()
+        title_results: [dict] = []
+        content_results: [dict] = []
+        results: (list, list) = (None, None)
+
+        # TODO Too many levels of abstraction
+        resource_basic: dict = {}
+        with open(self.db_name, "r") as csvfile:
+            reader = DictReader(csvfile)
+            for row in reader:
+                if search_str_lower in row["title"].lower():
+                    for field in basic_fieldnames:
+                        resource_basic[field] = row[field]
+                    title_results.append(deepcopy(resource_basic))
+                elif search_str_lower in row["description"].lower():
+                    for field in basic_fieldnames:
+                        resource_basic[field] = row[field]
+                    content_results.append(deepcopy(resource_basic))
+
+        results = (title_results, content_results)
+
+        return results
