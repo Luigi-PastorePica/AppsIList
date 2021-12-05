@@ -43,3 +43,5 @@ class Resource:
 
     def get_rating(self):
         pass
+
+# TODO Need to provide a to_json or to_dict conversion. I think only the to_dict is necessary because this object will only be used in the front end

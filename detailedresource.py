@@ -42,3 +42,11 @@ class DetailedResource(Resource):
 
     def get_reviews(self):
         pass
+
+    def to_dict(self):
+        pass
+
+    def to_json(self):
+        pass
+
+# TODO Need to provide a to_json and/or to_dict conversion
